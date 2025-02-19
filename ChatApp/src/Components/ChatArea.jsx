@@ -20,11 +20,7 @@ export const ChatArea = () => {
   return (
     <div className='w-2/3  '>
 
-        <div className='flex gap-4 justify-end p-10'>
-            <button className='border-2 rounded-xl px-2'>Clear Chat</button>
-            <button className='border-2 rounded-xl px-2'> More</button >
-        </div>
-        
+              
         <div className=' content-end relative border-4 h-5/6 rounded-3xl overflow-auto '>
          {isSent &&
             <>

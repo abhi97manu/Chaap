@@ -1,19 +1,20 @@
-import React from 'react'
+import React, { useState,useEffect } from 'react'
 import { Friends } from './Friends'
+import { useParams } from 'react-router-dom'
 
 export const FriendsList = () => {
+
+  
+
+
   return (
     <div className='w-1/3'>
-        <div className='p-10'>
-            <input type = "search" placeholder = "search" className='border-2 rounded-xl  px-2 border-zinc-600'></input>
-            <input type = "submit" ></input>
-        </div>
 
-        <div className=' border-4 h-5/6 rounded-3xl '>
+
+        <div className=' border-4 h-5/6 rounded-3xl p-2'>
+        
         <Friends/>
-        <Friends/>
-        <Friends/>
-        <Friends/>
+       
 
         </div>
     </div>

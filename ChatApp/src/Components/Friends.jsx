@@ -38,7 +38,7 @@ export const Friends = () => {
     <>
     { friendName.map((friend,inbex)=>(
       
-    <div key = {inbex} className='m-2flex items-center justify-between gap-5 border-2 rounded-2xl p-2'>
+    <div key = {inbex} className='m-2 flex items-center justify-between gap-5 border-2 rounded-2xl p-2'>
         <div className='flex items-center gap-5'>
             <img src={friend.prPic} className='w-[2rem] border-2 rounded-3xl'></img>
             <div>

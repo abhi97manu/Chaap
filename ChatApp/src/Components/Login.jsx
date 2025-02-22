@@ -75,8 +75,8 @@ export const Login = () => {
                 const data = await loginData.json();
                 const token = data.token;
                 setUserEmail(email);
-               
-                localStorage.setItem('token', token);
+               console.log(token);
+                sessionStorage.setItem('token', token);
                
                 navigate(`/user/${email}`);
             }

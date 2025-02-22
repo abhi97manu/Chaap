@@ -19,7 +19,7 @@ router.route("/login").post(async (req, res) =>{
              if(result){
                 let token = jwt.sign({email:users.email, userId: users._id}, "sarkar")
                // res.cookie("token",token);
-                 //console.log(token)    
+                 console.log(token)    
                  res.status(201).send({ success: true, token });
              }else{
                 res.status(500).json({ msg: "Auth notdone" });

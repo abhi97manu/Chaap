@@ -25,10 +25,7 @@ function App() {
             <div>
             
               <Navbar/>
-                <div className='flex w-full h-screen'>
-                  <FriendsList/>
-                  <ChatArea/>
-                  </div>
+               
             
             </div>
             

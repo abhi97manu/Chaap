@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { FriendsList } from './FriendsList.jsx';
+
 import { ChatArea } from './ChatArea.jsx';
 import { Avatar } from './Avatar.jsx';
 
@@ -8,6 +8,7 @@ import {connectSocket, disconnectSocket} from "./Socket.jsx"
 import {Link, useParams} from 'react-router-dom';
 import { Context } from './Context.jsx';
 import { useNavigate } from 'react-router-dom';
+import {Friends} from './Friends';
 
 
 export const Navbar = () => {
@@ -17,6 +18,8 @@ export const Navbar = () => {
   const [userName, setuserName] = useState("");
   const {email} = useParams();
   const {setIsLoggedIn, isLoggedIn} = useContext(Context)
+   const[openChat, setOpenChat] = useState()
+   const [userId, setUserId] = useState();
 //console.log(email);
 
 //setSocketInstace(connectSocket);
@@ -33,6 +36,7 @@ useEffect(() => {
         return;
     }
     const fetchUsers = async () => {
+      let data = "";
       try{
         const resp = await fetch(`http://localhost:5001/api/user/${email}`,{
           method: 'GET',
@@ -43,7 +47,7 @@ useEffect(() => {
         
         }); 
         
-        const data = await resp.json();
+         data = await resp.json();
         if(resp.ok) {
            setuserName(data.username);
            setSocketInstace(connectSocket());
@@ -57,10 +61,21 @@ useEffect(() => {
       catch(err){
         console.error(err.message);
       }
+      if(socketInstance){
+            console.log("socket connected")
+            socketInstance.emit("register", data._id)
+            setUserId(data._id);
+      }
+  
+  else{
+    console.log("socket not connected")
+  }
+     
+      
       
     }
     fetchUsers();
-  },[isLoggedIn]);
+  },[isLoggedIn,socketInstance]);
  
  
  
@@ -100,8 +115,9 @@ useEffect(() => {
 
       <div className='flex w-full h-screen'>
     
-      <FriendsList/>
-      <ChatArea  socket = {socketInstance}/>
+     
+      <Friends setOpenChat = {setOpenChat} openChat = {openChat}/>
+      <ChatArea  socket = {socketInstance} openChat = {openChat} userId = {userId}/>
       </div>
 
       </>

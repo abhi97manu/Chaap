@@ -23,14 +23,15 @@ router.route('/friend-list').post( async (req, res) => {
 router.route("/user/:email/friends").get(async (req, res) =>{
     try{
         const user = await User.findOne({email : req.params.email}).populate("friends","name prPic").exec();
-      //console.log(user);
-        if(!user){
-           // console.log(user);
-            res.status(404).send('Friends details not found');
+     //console.log(user);
+            if(!user){
+            // console.log(user);
+                res.status(404).send('Friends details not found');
+            }
+            const friends = await User.findOne({email : req.params.email}).populate("friends", "username");
+            console.log(friends.friends);
+            res.send(friends.friends);
         }
-      
-        res.send(user.friends);
-    }
     catch(err){
         res.status(500).send('Server Error');
     }

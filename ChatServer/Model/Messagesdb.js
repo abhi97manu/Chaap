@@ -6,7 +6,7 @@ const msgSchema = new db.Schema({
     recieverID: {type: String, required: true},
     message: [
         {
-        messageSet: {type: String, required: true},
+        messageSet: [{type: String, required: true}],
         timestamp: {type: Date ,required: true,default: Date.now}
         
          }

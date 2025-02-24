@@ -11,7 +11,7 @@ export const Login = () => {
     const [userEmail, setUserEmail] = useState("");
    
     const navigate = useNavigate();
-    const {isLoggedIn, setIsLoggedIn} = useContext(Context);
+   
     
 
     const handleSignUp = async (e) => {

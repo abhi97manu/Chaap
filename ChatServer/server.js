@@ -22,13 +22,22 @@ const io = new Server(server,{
     }
 });
 
-
+const users = new Map();
 
 io.on('connection', (socket) => {
     console.log("user is connected " + socket.id);
+    socket.on("register", (user) => {
+        users.set(user,socket.id);
+        console.log("User registered: " + user +  " " + socket.id);
+    })
     socket.on("message", (message) =>{
-        console.log("Received message: " + message);
-        io.emit('message', message);
+        console.log("send message: " + message.message +" to : " + message.sendTo);
+
+        const sendToSocketId = users.get(message.sendTo);
+        if(sendToSocketId){
+        io.to(sendToSocketId).emit('sendMsg', message.message);
+        console.log("sent to : " + sendToSocketId)
+        }
     })
 
     socket.on("disconnect", () => {

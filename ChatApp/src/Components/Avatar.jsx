@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {Canvas} from '@react-three/fiber'
 import { useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/Addons.js'
@@ -7,8 +7,43 @@ import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'; 
 import vertexShader from '../Shaders/VertexShader.glsl'
 import fragmentShader from '../Shaders/FragmentShader.glsl'
+import waterVertex from '../Shaders/WaterVertex.glsl'
+import waterFragment from '../Shaders/WaterFragment.glsl'
+import { sin } from 'three/tsl'
+
 
 export const Avatar = () => {
+
+const [Theta, setTheta] = useState();
+  const waterShaderRef = useRef();
+  const planeRef = useRef();
+ 
+
+  const clock = new THREE.Clock();
+  useEffect(() => {
+   
+   
+    const interval = setInterval(() => {
+     if (waterShaderRef.current)
+     {
+      waterShaderRef.current.uniforms.uTime.value = clock.getElapsedTime();
+     waterShaderRef.current.uniforms.directionalLight.value = [20* Math.cos(clock.getElapsedTime() *0.1),20* Math.sin(clock.getElapsedTime() * 0.1),0 ]
+
+     }
+    
+      if(planeRef.current)
+     {
+     // console.log(planeRef.current.material.uniforms)
+      //planeRef.current.uniforms.ambientColor.value = [1,1,1]
+      planeRef.current.material.uniforms.directionalLight.value = [20* Math.cos(clock.getElapsedTime() * 0.1),20* Math.sin(clock.getElapsedTime() * 0.1),0 ];
+      }
+    },16);
+    setTheta(clock.getElapsedTime() * 1);
+  },[])
+
+
+   
+
 
 
    //Load Shaders 
@@ -17,18 +52,39 @@ export const Avatar = () => {
   vertexShader,
   fragmentShader,
   uniforms: {
-    directionalLight: {value : new THREE.Vector3(50,10,0)},
-    ambientColor : {value : new THREE.Color(0.5,0.8,0.8)},
-    pixelColor : {value : new THREE.Color(0.9,0.8,0.4)},
+    directionalLight: {value : new THREE.Vector3([10,10,10])},
+    ambientColor : {value : new THREE.Color(0.8,0.9,0.9)},
+    pixelColor : {value : new THREE.Color(0.0,0.8,0.4)},
   }
  })
+
+
   //load Models
-  const gltf = useLoader(GLTFLoader, '/src/assets/boy.glb'); 
+
+  //Boy Model load
+  const gltf = useLoader(GLTFLoader, '/assets/boy.glb'); 
   gltf.scene.traverse((child) =>
 {
+  
   if (child.isMesh) child.material = AvatarShader;
+  
+})
+;
+//Plane Model load
+const plane = useLoader(GLTFLoader, '/assets/testTerrain.glb');
+   plane.scene.traverse((child) =>
+ {
+
+   if (child.isMesh) child.material = AvatarShader;
 })
 
+
+
+
+//Load Textures
+
+const waterTexture = new THREE.TextureLoader().load('/Textures/WaterTex.jpg');
+const waterNormTexture = new THREE.TextureLoader().load('/Textures/WaterNORM.jpg');
 
 
 
@@ -37,13 +93,13 @@ export const Avatar = () => {
   return (
     <>
   <div className='w-full h-screen'>
-    <Canvas className='bg-zinc-300'>
+    <Canvas className='bg-zinc-300' camera={ {position : [-10,10,15]}}>
        
+    <OrbitControls/>
      
-      <directionalLight intensity = {0.7} position = {[1,10,5]} color = "white" castShadow /> 
       
       {/* <ambientLight intensity={1.5} /> */}
-       <mesh position={[0, 1, -5]} rotation={[0, 0, 0]} castShadow>
+       <mesh position={[20 *Math.cos(Theta ), 20*  Math.sin(Theta ), 0]} rotation={[0, 0, 0]} castShadow>
         <boxGeometry/>
         <shaderMaterial vertexShader={vertexShader}
         fragmentShader={fragmentShader}></shaderMaterial>
@@ -52,17 +108,29 @@ export const Avatar = () => {
         
       </mesh> 
 
-      ///Plane
+     {/* water model */}
 
-      <mesh position={[0, -1, 0]} rotation={[80, 0, 0]} scale= {[10,10,10]} >
+      <mesh position={[55, -2, -60]} rotation={[Math.PI/2, 0, 0]} scale= {[30,40,30]} castShadow >
         <planeGeometry />
-        <meshStandardMaterial color="green" />
-        
+        <shaderMaterial ref = {waterShaderRef} vertexShader={waterVertex} fragmentShader={waterFragment}  side = {THREE.DoubleSide}
+        uniforms={
+          {
+            uTex: {value : waterTexture},
+            uNormTex : {value : waterNormTexture},
+            uTime : {value : 0},
+            directionalLight: {value : new THREE.Vector3([10,10,10]).normalize()},
+          }
+        }/>
       </mesh> 
-      <OrbitControls/>
-      {<primitive object = {gltf.scene} castShadow scale={[1,1,1]} position = {[0,-0.8,0]}>
+
+    {/* boy model */}
+      <primitive object = {gltf.scene} castShadow scale={[1,1,1]} position = {[0,-0.8,0]}>
+        </primitive> 
+
+     {/* plane model */}  
+      <primitive ref = {planeRef} object = {plane.scene} material = {AvatarShader} castShadow scale={[1,1,1]} position = {[0,-0.8,0]}>
       
-      </primitive> }
+      </primitive> 
     </Canvas>
     </div>
     </>
